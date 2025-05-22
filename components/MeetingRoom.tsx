@@ -1,5 +1,5 @@
 'use client';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   CallControls,
   CallParticipantsList,
@@ -32,9 +32,46 @@ const MeetingRoom = () => {
   const [layout, setLayout] = useState<CallLayoutType>('speaker-left');
   const [showParticipants, setShowParticipants] = useState(false);
   const { useCallCallingState } = useCallStateHooks();
+  const [deviceError, setDeviceError] = useState(false);
 
   // for more detail about types of CallingState see: https://getstream.io/video/docs/react/ui-cookbook/ringing-call/#incoming-call-panel
   const callingState = useCallCallingState();
+
+  useEffect(() => {
+    const checkDevices = async () => {
+      try {
+        const devices = await navigator.mediaDevices.enumerateDevices();
+        const hasVideo = devices.some(device => device.kind === 'videoinput');
+        const hasAudio = devices.some(device => device.kind === 'audioinput');
+        
+        if (!hasVideo || !hasAudio) {
+          setDeviceError(true);
+        }
+      } catch (error) {
+        console.error('Device enumeration error:', error);
+        setDeviceError(true);
+      }
+    };
+
+    checkDevices();
+  }, []);
+
+  if (deviceError) {
+    return (
+      <div className="flex h-screen w-full flex-col items-center justify-center gap-3 text-white">
+        <h1 className="text-2xl font-bold">Device Error</h1>
+        <p className="text-center">
+          Please ensure your camera and microphone are properly connected and permissions are granted.
+        </p>
+        <button
+          onClick={() => window.location.reload()}
+          className="bg-blue-500 px-4 py-2 rounded-md mt-4"
+        >
+          Refresh
+        </button>
+      </div>
+    );
+  }
 
   if (callingState !== CallingState.JOINED) return <Loader />;
 

@@ -12,8 +12,18 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 
 const DSAInterviewPage = () => {
   const router = useRouter();
+  
+  // Function to get next 15-minute interval
+  const getNextInterval = () => {
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const nextInterval = minutes + (15 - (minutes % 15));
+    const date = new Date(now.setMinutes(nextInterval, 0, 0));
+    return date;
+  };
+
   const [values, setValues] = useState({
-    dateTime: new Date(),
+    dateTime: getNextInterval(), // Use next interval instead of current time
     description: '',
     meetingType: 'dsa',
     dsaLevel: '',
@@ -80,8 +90,7 @@ const DSAInterviewPage = () => {
 
   return (
     <section className="flex size-full flex-col gap-10 text-white">
-      <h1 className="text-3xl font-bold">Schedule DSA/Behavioral Interview</h1>
-      
+      <h1 className="text-3xl font-bold">Schedule Your Interview</h1>
       <div className="flex max-w-[500px] flex-col gap-4">
         <div className="flex flex-col gap-2">
           <label className="text-base font-normal leading-[22.4px] text-sky-2">

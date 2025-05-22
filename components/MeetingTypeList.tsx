@@ -24,20 +24,37 @@ const MeetingTypeList = () => {
   const [meetingState, setMeetingState] = useState<
     'isScheduleMeeting' | 'isJoiningMeeting' | 'isInstantMeeting' | undefined
   >(undefined);
-  const [values, setValues] = useState(initialValues);
-  const [callDetail, setCallDetail] = useState<Call>();
   const client = useStreamVideoClient();
   const { user } = useUser();
   const { toast } = useToast();
 
+  // Function to get next 15-minute interval
+  const getNextInterval = () => {
+    const now = new Date();
+    const minutes = now.getMinutes();
+    const nextInterval = minutes + (15 - (minutes % 15));
+    const date = new Date(now.setMinutes(nextInterval, 0, 0));
+    return date;
+  };
+
+  const [values, setValues] = useState({
+    dateTime: getNextInterval(), // Use next interval instead of current time
+    description: '',
+    link: '',
+  });
+  const [callDetail, setCallDetail] = useState<Call>();
+
   const createMeeting = async () => {
     if (!client || !user) return;
     try {
-      if (!values.dateTime) {
+      // For instant meetings, set dateTime to current time
+      const meetingTime = meetingState === 'isInstantMeeting' ? new Date() : values.dateTime;
+      
+      if (!meetingTime) {
         toast({ title: 'Please select a date and time' });
         return;
       }
-      if (meetingState === 'isScheduleMeeting' && values.dateTime < new Date()) {
+      if (meetingState === 'isScheduleMeeting' && meetingTime < new Date()) {
         toast({ title: 'Please select a future date and time' });
         return;
       }
@@ -48,7 +65,7 @@ const MeetingTypeList = () => {
 
       await call.getOrCreate({
         data: {
-          starts_at: values.dateTime.toISOString(),
+          starts_at: meetingTime.toISOString(),
           custom: {
             description: values.description || 'Instant Meeting',
           },
