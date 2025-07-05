@@ -24,15 +24,16 @@ const MobileNav = () => {
           />
         </SheetTrigger>
         <SheetContent side="left" className="border-none bg-dark-1">
-          <Link href="/" className="flex items-center gap-1">
-            <Image
-              src="/icons/logo.svg"
-              width={32}
-              height={32}
-              alt="MeetMock logo"
-            />
-            <p className="text-[26px] font-extrabold text-white">MeetMock</p>
-          </Link>
+        <div className="flex lg:flex-1">
+              <Link href="/" className="-m-1 p-1 flex items-center space-x-2">
+                <div className="w-7 h-7 bg-gradient-to-r from-blue-600 to-indigo-900 rounded-lg flex items-center justify-center">
+                  <span className="text-white font-bold text-lg">C</span>
+                </div>
+                <div className="text-lg font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-white">
+                  MeetMock
+                </div>
+              </Link>
+            </div>
           <div className="flex h-[calc(100vh-72px)] flex-col justify-between overflow-y-auto">
             <SheetClose asChild>
               <section className=" flex h-full flex-col gap-6 pt-16 text-white">
